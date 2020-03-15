@@ -1,0 +1,91 @@
+var Calculate = /** @class */ (function () {
+    function Calculate(id) {
+        var _this = this;
+        this.result = 0;
+        this.stack = [];
+        this.onClick = function (event) {
+            console.log(event);
+            var val = event.target.innerText;
+            switch (val) {
+                case '*':
+                case '/':
+                case '+':
+                case '-':
+                case '=':
+                    _this.stack.push(_this.input.value);
+                    if (_this.stack.length > 2) {
+                        _this.processing();
+                    }
+                    _this.stack.push(val);
+                    _this.input.value = '';
+                    if (val === '=') {
+                        _this.processing();
+                    }
+                    break;
+                default:
+                    _this.input.value = (parseFloat(_this.input.value + val)).toString();
+                    break;
+            }
+        };
+        this.processing = function () {
+            var res = 0;
+            console.log(_this.stack);
+            while (_this.stack.length > 0) {
+                var val = _this.stack.shift();
+                switch (val) {
+                    case '*':
+                        res *= parseFloat(_this.stack.shift());
+                        break;
+                    case '/':
+                        res /= parseFloat(_this.stack.shift());
+                        break;
+                    case '-':
+                        res -= parseFloat(_this.stack.shift());
+                        break;
+                    case '+':
+                        res += parseFloat(_this.stack.shift());
+                        break;
+                    case '=':
+                        _this.stack.shift();
+                        break;
+                    default:
+                        res = parseFloat(val);
+                        break;
+                }
+            }
+            _this.stack.push(res.toString());
+            _this.input.value = res.toString();
+        };
+        this.render = function () {
+            _this.input = document.createElement('input');
+            _this.input.value = _this.result.toString();
+            _this.root.appendChild(_this.input);
+            var controls = [
+                ['7', '8', '9', '*'],
+                ['4', '5', '6', '/'],
+                ['1', '2', '3', '-'],
+                ['', '0', '=', '+']
+            ];
+            for (var _i = 0, controls_1 = controls; _i < controls_1.length; _i++) {
+                var ar = controls_1[_i];
+                for (var _a = 0, ar_1 = ar; _a < ar_1.length; _a++) {
+                    var i = ar_1[_a];
+                    if (i) {
+                        var el = document.createElement('div');
+                        el.innerText = i;
+                        el.classList.add('cell');
+                        el.addEventListener('click', _this.onClick);
+                        _this.root.appendChild(el);
+                    }
+                    else {
+                        _this.root.appendChild(document.createElement('div'));
+                    }
+                }
+            }
+        };
+        this.root = document.getElementById(id);
+        this.render();
+    }
+    return Calculate;
+}());
+var calc = new Calculate('app');
